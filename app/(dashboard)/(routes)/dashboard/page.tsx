@@ -16,9 +16,9 @@ import { useRouter } from 'next/navigation'
 
 const tools = [
   {
-    label: "Conversition",
+    label: "Conversation",
     icon: MessageSquare,
-    href: "/conversition",
+    href: "/conversation",
     color: "text-violet-500",
     bgColor: "bg-violet-500/10",
   },

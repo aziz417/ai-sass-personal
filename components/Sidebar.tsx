@@ -23,15 +23,21 @@ const montserrat = Montserrat({
 
 const routes = [
       {
+            label: "Landing",
+            icon: LayoutDashboard,
+            href: "/",
+            color: "text-green-500",
+      },
+      {
             label: "Dashboard",
             icon: LayoutDashboard,
             href: "/dashboard",
             color: "text-sky-500",
       },
       {
-            label: "Conversition",
+            label: "Conversation",
             icon: MessageSquare,
-            href: "/conversition",
+            href: "/conversation",
             color: "text-violet-500",
       },
       {
