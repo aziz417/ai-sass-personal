@@ -4,10 +4,11 @@
 import * as z from "zod"
 import axios from 'axios';
 import { Heading } from "@/components/Heading";
-import { MessageSquare } from "lucide-react";
+import { Code } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { fromSchema } from "./constant";
+import ReactMarkdown from "react-markdown";
 
 const { Configuration, OpenAIApi } = require("openai");
 
@@ -29,11 +30,11 @@ import UserAvater from "@/components/UserAvater";
 import BotAvater from "@/components/BotAvater";
 import { cn } from "@/lib/utils";
 
-const conversationPage = () => {
+const codePage = () => {
 
 
       const configuration = new Configuration({
-            apiKey: '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',
+            apiKey: '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',
       });
 
       const openai = new OpenAIApi(configuration);
@@ -62,20 +63,25 @@ const conversationPage = () => {
 
                   const newMessages = [...messages, userMessage]
 
-
+                  const instructionMessage: ChatCompletionRequestMessage = {
+                        role: "system",
+                        content: "You are a code generator. You must anwer only in markdown code snippets. Use code comments for explanations."
+                  }
 
                   const response = await openai.createChatCompletion({
                         model: "gpt-3.5-turbo",
-                        messages: newMessages,
+                        messages: [instructionMessage, ...newMessages]
                   });
 
-                  // const response = await fetch("/api/conversation", {
+                  // const response = await fetch("/api/code", {
                   //       method: 'POST',
                   //       body: JSON.stringify(newMessages),
                   // });
 
                   // console.log(response);
 
+
+                  // setMessages((current) => [...current, userMessage, response?.data])
 
                   setMessages((current) => [...current, userMessage, response.data.choices[0].message])
 
@@ -91,11 +97,11 @@ const conversationPage = () => {
       return (
             <div>
                   <Heading
-                        title={"Conversation"}
-                        description="Our Most Advance Conversition Model."
-                        icon={MessageSquare}
-                        iconColor="text-violet-500"
-                        bgColor="bg-violet-500/10"
+                        title={"Code Generation"}
+                        description="Generate code using descriptive text."
+                        icon={Code}
+                        iconColor="text-green-700"
+                        bgColor="bg-green-700/10"
                   />
 
                   <div className="px-4 lg:px-8">
@@ -124,7 +130,7 @@ const conversationPage = () => {
                                                             focus-visible:ring-0 focus-visible:translate
                                                             "
                                                                   disabled={isLoading}
-                                                                  placeholder="How do i calculate the redius of a circle?"
+                                                                  placeholder="Simple toggle button using react hooks."
                                                                   {...field}
                                                             />
                                                       </FormControl>
@@ -155,20 +161,32 @@ const conversationPage = () => {
                                           </div>
                                     )}
 
-                                    <div className="flex flex-col-reverse gap-y-4">
-                                          {messages?.map((message) => (
-                                                <div key={message.content}
-                                                      className={cn("p-8 w-full flex items-start gap-x-8 rounded-lg",
-                                                            message?.role === 'user' ? "bg-white border border-black/10" : "bg-muted")}
-                                                >
-                                                      {message?.role === 'user' ? <UserAvater /> : <BotAvater />}
-                                                      <p className="text-sm">
-                                                            {message.content}
-                                                      </p>
-                                                </div>
-                                          ))}
+                                    {messages?.map((message) => (
+                                          <div key={message.content}
+                                                className={cn("p-8 w-full flex items-start gap-x-8 rounded-lg",
+                                                      message?.role === 'user' ? "bg-white border border-black/10" : "bg-muted")}
+                                          >
+                                                {message?.role === 'user' ? <UserAvater /> : <BotAvater />}
+                                                <ReactMarkdown
+                                                      components={{
+                                                            pre: ({ node, ...props }) => (
+                                                                  <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
+                                                                        <pre {...props} />
+                                                                  </div>
+                                                            ), 
+                                                            code: ({node, ...props}) => (
+                                                                  <code className="bg-black/10 rounded-lg p-1" {...props}/>
+                                                            )
+                                                      }}
 
-                                    </div>
+                                                      className="text-sm overflow-hidden leading-7"
+                                                >
+                                                      {message.content || ""}
+                                                </ReactMarkdown>
+
+                                          </div>
+                                    ))}
+
                               </div>
                         </div>
                   </div>
@@ -176,4 +194,4 @@ const conversationPage = () => {
       )
 }
 
-export default conversationPage;
+export default codePage;

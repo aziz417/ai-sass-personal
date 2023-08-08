@@ -4,7 +4,7 @@
 import * as z from "zod"
 import axios from 'axios';
 import { Heading } from "@/components/Heading";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Music } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { fromSchema } from "./constant";
@@ -29,18 +29,18 @@ import UserAvater from "@/components/UserAvater";
 import BotAvater from "@/components/BotAvater";
 import { cn } from "@/lib/utils";
 
-const conversationPage = () => {
+import Replicate from "replicate";
 
 
-      const configuration = new Configuration({
-            apiKey: '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',
+
+const musicPage = () => {
+
+
+      const replicate = new Replicate({
+            auth: "r8_LAuvQ04RxpKHF0qSsfQeRXyRJ9vPWHz0Wvwei",
       });
 
-      const openai = new OpenAIApi(configuration);
-
-      delete configuration.baseOptions.headers['User-Agent'];
-
-      const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([])
+      const [music, setMusic] = useState<string>()
 
       const router = useRouter();
 
@@ -55,29 +55,31 @@ const conversationPage = () => {
 
       const onSubmit = async (values: z.infer<typeof fromSchema>) => {
             try {
-                  const userMessage: ChatCompletionRequestMessage = {
-                        role: "user",
-                        content: values.prompt
-                  };
-
-                  const newMessages = [...messages, userMessage]
+                  setMusic(undefined)
 
 
-
-                  const response = await openai.createChatCompletion({
-                        model: "gpt-3.5-turbo",
-                        messages: newMessages,
-                  });
-
-                  // const response = await fetch("/api/conversation", {
-                  //       method: 'POST',
-                  //       body: JSON.stringify(newMessages),
+                  // const response = await openai.createChatCompletion({
+                  //       model: "gpt-3.5-turbo",
+                  //       messages: newMessages,
                   // });
 
-                  // console.log(response);
+                  // const response = await fetch("/api/music", values);
 
+                  console.log(values);
 
-                  setMessages((current) => [...current, userMessage, response.data.choices[0].message])
+                  const response = await replicate.run(
+                        "riffusion/riffusion:8cf61ea6c56afd61d8f5b9ffd14d7c216c0a93844ce2d82ac1c9ecc9c7f24e05",
+                        {
+                              input: {
+                                    prompt_a: values
+                              }
+                        }
+                  );
+
+                  console.log(response);
+                  
+
+                  // setMusic(response)
 
                   form.reset()
 
@@ -91,11 +93,11 @@ const conversationPage = () => {
       return (
             <div>
                   <Heading
-                        title={"Conversation"}
-                        description="Our Most Advance Conversition Model."
-                        icon={MessageSquare}
-                        iconColor="text-violet-500"
-                        bgColor="bg-violet-500/10"
+                        title={"Music Generation"}
+                        description="Turn you prompt into an music."
+                        icon={Music}
+                        iconColor="text-emerald-500"
+                        bgColor="bg-emerald-500/10"
                   />
 
                   <div className="px-4 lg:px-8">
@@ -124,7 +126,7 @@ const conversationPage = () => {
                                                             focus-visible:ring-0 focus-visible:translate
                                                             "
                                                                   disabled={isLoading}
-                                                                  placeholder="How do i calculate the redius of a circle?"
+                                                                  placeholder="Piano Slow"
                                                                   {...field}
                                                             />
                                                       </FormControl>
@@ -149,24 +151,14 @@ const conversationPage = () => {
                                           </div>
                                     )}
 
-                                    {messages?.length === 0 && !isLoading && (
+                                    {music?.length === 0 && !isLoading && (
                                           <div>
-                                                <Empty label="No start conversation" />
+                                                <Empty label="No music conversation" />
                                           </div>
                                     )}
 
                                     <div className="flex flex-col-reverse gap-y-4">
-                                          {messages?.map((message) => (
-                                                <div key={message.content}
-                                                      className={cn("p-8 w-full flex items-start gap-x-8 rounded-lg",
-                                                            message?.role === 'user' ? "bg-white border border-black/10" : "bg-muted")}
-                                                >
-                                                      {message?.role === 'user' ? <UserAvater /> : <BotAvater />}
-                                                      <p className="text-sm">
-                                                            {message.content}
-                                                      </p>
-                                                </div>
-                                          ))}
+                                          Music Generated here
 
                                     </div>
                               </div>
@@ -176,4 +168,4 @@ const conversationPage = () => {
       )
 }
 
-export default conversationPage;
+export default musicPage;
