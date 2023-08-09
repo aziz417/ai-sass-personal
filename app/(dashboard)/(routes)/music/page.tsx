@@ -28,8 +28,9 @@ import Loader from "@/components/Loader";
 import UserAvater from "@/components/UserAvater";
 import BotAvater from "@/components/BotAvater";
 import { cn } from "@/lib/utils";
-
+import fetch from 'node-fetch';
 import Replicate from "replicate";
+
 
 
 
@@ -38,6 +39,7 @@ const musicPage = () => {
 
       const replicate = new Replicate({
             auth: "r8_LAuvQ04RxpKHF0qSsfQeRXyRJ9vPWHz0Wvwei",
+            fetch: fetch,
       });
 
       const [music, setMusic] = useState<string>()
@@ -50,6 +52,7 @@ const musicPage = () => {
                   prompt: ""
             }
       });
+
 
       const isLoading = form.formState.isSubmitting;
 
@@ -67,17 +70,18 @@ const musicPage = () => {
 
                   console.log(values);
 
-                  const response = await replicate.run(
-                        "riffusion/riffusion:8cf61ea6c56afd61d8f5b9ffd14d7c216c0a93844ce2d82ac1c9ecc9c7f24e05",
+
+                  const output = await replicate.run(
+                        "suno-ai/bark:b76242b40d67c76ab6742e987628a2a9ac019e11d56ab96c4e91ce03b79b2787",
                         {
                               input: {
-                                    prompt_a: values
+                                    prompt: "Hello, my name is Suno. And, uh — and I like pizza. [laughs] But I also have other interests such as playing tic tac toe."
                               }
                         }
                   );
 
-                  console.log(response);
-                  
+                  console.log(output);
+
 
                   // setMusic(response)
 
