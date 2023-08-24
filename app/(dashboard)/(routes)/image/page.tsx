@@ -36,7 +36,7 @@ const imagePage = () => {
 
       const [images, setImages] = useState<string[]>([])
       const configuration = new Configuration({
-            apiKey: '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',
+            apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
       });
 
       const openai = new OpenAIApi(configuration);

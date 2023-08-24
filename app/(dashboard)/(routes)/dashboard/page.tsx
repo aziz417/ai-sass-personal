@@ -16,6 +16,13 @@ import { useRouter } from 'next/navigation'
 
 const tools = [
   {
+    label: "Code Generation",
+    icon: Code,
+    href: "/code",
+    color: "text-green-700",
+    bgColor: "bg-green-700/10",
+  },
+  {
     label: "Conversation",
     icon: MessageSquare,
     href: "/conversation",
@@ -43,13 +50,7 @@ const tools = [
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10",
   },
-  {
-    label: "Code Generation",
-    icon: Code,
-    href: "/code",
-    color: "text-green-700",
-    bgColor: "bg-green-700/10",
-  },
+
 ]
 
 export default function Dashboard() {

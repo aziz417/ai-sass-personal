@@ -33,7 +33,7 @@ const conversationPage = () => {
 
 
       const configuration = new Configuration({
-            apiKey: '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',
+            apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
       });
 
       const openai = new OpenAIApi(configuration);
@@ -141,9 +141,8 @@ const conversationPage = () => {
                         </Form>
 
                         <div className="space-y-4 mt-4">
-
-                              <div className="flex flex-col-reverse gap-y-4">
-                                    {isLoading && (
+                              <div>
+                              {isLoading && (
                                           <div className="p-8 flex justify-center items-center bg-muted w-full rounded-lg">
                                                 <Loader />
                                           </div>
@@ -154,6 +153,10 @@ const conversationPage = () => {
                                                 <Empty label="No start conversation" />
                                           </div>
                                     )}
+                              </div>
+
+                              <div className="flex flex-col-reverse gap-y-4">
+                                    
 
                                     <div className="flex flex-col-reverse gap-y-4">
                                           {messages?.map((message) => (

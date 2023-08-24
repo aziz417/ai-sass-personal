@@ -34,7 +34,7 @@ const codePage = () => {
 
 
       const configuration = new Configuration({
-            apiKey: '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',
+            apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
       });
 
       const openai = new OpenAIApi(configuration);
@@ -147,8 +147,7 @@ const codePage = () => {
                         </Form>
 
                         <div className="space-y-4 mt-4">
-
-                              <div className="flex flex-col-reverse gap-y-4">
+                              <div>
                                     {isLoading && (
                                           <div className="p-8 flex justify-center items-center bg-muted w-full rounded-lg">
                                                 <Loader />
@@ -160,6 +159,9 @@ const codePage = () => {
                                                 <Empty label="No start conversation" />
                                           </div>
                                     )}
+                              </div>
+                              <div className="flex flex-col-reverse gap-y-4">
+
 
                                     {messages?.map((message) => (
                                           <div key={message.content}
@@ -173,9 +175,9 @@ const codePage = () => {
                                                                   <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
                                                                         <pre {...props} />
                                                                   </div>
-                                                            ), 
-                                                            code: ({node, ...props}) => (
-                                                                  <code className="bg-black/10 rounded-lg p-1" {...props}/>
+                                                            ),
+                                                            code: ({ node, ...props }) => (
+                                                                  <code className="bg-black/10 rounded-lg p-1" {...props} />
                                                             )
                                                       }}
 
