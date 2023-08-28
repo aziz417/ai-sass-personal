@@ -8,6 +8,14 @@ import { MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { fromSchema } from "./constant";
+import { materialLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
+
+import remarkGfm from 'remark-gfm';
+import ReactMarkdown from 'react-markdown';
+import SyntaxHighlighter from "react-syntax-highlighter";
+// import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+
 
 const { Configuration, OpenAIApi } = require("openai");
 
@@ -30,7 +38,7 @@ import BotAvater from "@/components/BotAvater";
 import { cn } from "@/lib/utils";
 
 const conversationPage = () => {
-
+     
 
       const configuration = new Configuration({
             apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -64,9 +72,28 @@ const conversationPage = () => {
 
 
 
+                  // const response = await openai.createChatCompletion({
+                  //       model: "gpt-3.5-turbo",
+                  //       messages: newMessages,
+                  // });
+
                   const response = await openai.createChatCompletion({
-                        model: "gpt-3.5-turbo",
-                        messages: newMessages,
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                              {
+                                    role: 'system',
+                                    content:
+                                          "you're an a AI assistant that replies to all my questions in markdown format.",
+                              },
+                              { role: 'user', content: 'hi' },
+                              { role: 'assistant', content: 'Hi! How can I help you?' },
+                              { role: 'user', content: `${newMessages}?` },
+                        ],
+                        temperature: 0.3,
+                        max_tokens: 1000,
+                        top_p: 0.3,
+                        frequency_penalty: 0.5,
+                        presence_penalty: 0.2,
                   });
 
                   // const response = await fetch("/api/conversation", {
@@ -74,7 +101,7 @@ const conversationPage = () => {
                   //       body: JSON.stringify(newMessages),
                   // });
 
-                  // console.log(response);
+                  console.log(response);
 
 
                   setMessages((current) => [...current, userMessage, response.data.choices[0].message])
@@ -142,7 +169,7 @@ const conversationPage = () => {
 
                         <div className="space-y-4 mt-4">
                               <div>
-                              {isLoading && (
+                                    {isLoading && (
                                           <div className="p-8 flex justify-center items-center bg-muted w-full rounded-lg">
                                                 <Loader />
                                           </div>
@@ -156,7 +183,7 @@ const conversationPage = () => {
                               </div>
 
                               <div className="flex flex-col-reverse gap-y-4">
-                                    
+
 
                                     <div className="flex flex-col-reverse gap-y-4">
                                           {messages?.map((message) => (
@@ -165,9 +192,33 @@ const conversationPage = () => {
                                                             message?.role === 'user' ? "bg-white border border-black/10" : "bg-muted")}
                                                 >
                                                       {message?.role === 'user' ? <UserAvater /> : <BotAvater />}
-                                                      <p className="text-sm">
+                                                      {/* <p className="text-sm">
                                                             {message.content}
-                                                      </p>
+                                                      </p> */}
+
+                                                      <ReactMarkdown
+                                                            className={`message__markdown`}
+                                                            children={message.content || ''}
+                                                            remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
+                                                            components={{
+                                                                  code({ node, inline, className, style, children, ...props }) {
+                                                                        const match = /language-(\w+)/.exec(className || 'language-js');
+                                                                        return !inline && match ? (
+                                                                              <SyntaxHighlighter
+                                                                                    children={String(children).replace(/\n$/, '')}
+                                                                                    style={oneDark}
+                                                                                    language={match[1]}
+                                                                                    PreTag='div'
+                                                                                    {...props}
+                                                                              />
+                                                                        ) : (
+                                                                              <code className={className} {...props}>
+                                                                                    {children}{' '}
+                                                                              </code>
+                                                                        );
+                                                                  },
+                                                            }}
+                                                      />
                                                 </div>
                                           ))}
 
